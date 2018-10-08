@@ -7,6 +7,7 @@ import 'package:web3dart/src/io/rawtransaction.dart';
 import 'package:web3dart/src/utils/amounts.dart';
 import "package:web3dart/src/utils/numbers.dart" as numbers;
 import 'package:web3dart/web3dart.dart';
+import 'package:web3dart/src/proto/proto_transaction.dart';
 
 /// Class for sending requests over an HTTP JSON-RPC API endpoint to Ethereum
 /// clients. This library won't use the accounts feature of clients to use them
@@ -124,9 +125,41 @@ class Web3Client {
 	/// historical data. By default, [BlockNum.current] will be used.
 	Future<EtherAmount> getBalance(EthereumAddress address, {BlockNum atBlock}) {
 		var blockParam = _getBlockParam(atBlock);
-		
+
 		return _makeRPCCall("eth_getBalance", [address.hex, blockParam]).then((data) {
 			return EtherAmount.fromUnitAndValue(EtherUnit.wei, numbers.hexToInt(data));
+		});
+	}
+
+	Future<int> getMaxNonce(EthereumAddress address) {
+		return _makeRPCCall("eth_getMaxNonce", [address.hex])
+				.then((s) => numbers.hexToInt(s)).then((d) => d.toInt());
+	}
+
+	Future<ProtoTransaction> getTransactionFromAddr(EthereumAddress address, int nonce) {
+		return _makeRPCCall("eth_getTransactionByAddrAndNonce", [address.hex, nonce])
+				.then((s) {
+			if (s == null) {
+				return null;
+			}
+
+			return new ProtoTransaction.fromJson(s);
+		});
+	}
+
+	Future<List<ProtoTransaction>> getTransactionsFromAddr(EthereumAddress address, int nonce, int upper) {
+		return _makeRPCCall("eth_getTransactionsByAddrAndNonce", [address.hex, nonce, upper])
+				.then((s) {
+			if (s == null) {
+				return null;
+			}
+
+			var ret = List<ProtoTransaction>();
+
+			for (var jtx in s) {
+				ret.add(new ProtoTransaction.fromJson(jtx));
+			}
+			return ret;
 		});
 	}
 
