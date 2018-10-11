@@ -107,9 +107,9 @@ class FinalizedTransaction {
 	}
 
 	/// Sends this transaction to the Ethereum client.
-	Future<List<int>> send(Web3Client client) {
+	Future<List<int>> send(Web3Client client, {int chainId = 1}) {
 		return _asRaw(client).then((raw) {
-			return client.sendRawTransaction(base._keys, raw);
+			return client.sendRawTransaction(base._keys, raw, chainId:chainId);
 		});
 	}
 
