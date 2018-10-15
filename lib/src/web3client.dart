@@ -8,11 +8,20 @@ import 'package:web3dart/src/utils/amounts.dart';
 import "package:web3dart/src/utils/numbers.dart" as numbers;
 import 'package:web3dart/web3dart.dart';
 import 'package:web3dart/src/proto/proto_transaction.dart';
+import 'package:web3dart/src/proto/transaction.dart';
 
 /// Class for sending requests over an HTTP JSON-RPC API endpoint to Ethereum
 /// clients. This library won't use the accounts feature of clients to use them
 /// to create transactions, you will instead have to obtain private keys of
 /// accounts yourself.
+
+enum TransactionType {
+  all, 
+  outlay, 
+  income, 
+  failed
+}
+
 class Web3Client {
 
 	final BlockNum defaultBlock = BlockNum.current();
@@ -128,6 +137,31 @@ class Web3Client {
 
 		return _makeRPCCall("eth_getBalance", [address.hex, blockParam]).then((data) {
 			return EtherAmount.fromUnitAndValue(EtherUnit.wei, numbers.hexToInt(data));
+		});
+	}
+
+	Future<TransactionResult> getTransactions(EthereumAddress address, TransactionType type, int offset, int limit) {
+		int typeValue = 0xf;
+		if (type == TransactionType.outlay) {
+			typeValue = 0x1;
+		} else if (type == TransactionType.income) {
+			typeValue = 0x2;
+		} else if (type == TransactionType.failed) {
+			typeValue = 0x8;
+		}
+		return _makeRPCCall("personal_getTransactionsByAccount", [address.hex, typeValue, offset, limit]).then((data) {
+			// return EtherAmount.fromUnitAndValue(EtherUnit.wei, numbers.hexToInt(data));
+			if (data == null) {
+				return null;
+			}
+
+			var txs = List<TransactionRows>();
+			for (var tx in data["datas"]) {
+				// print(reflect(tx).type.reflectedType.toString());
+				txs.add(new TransactionRows.fromJson(tx));
+			}
+
+			return TransactionResult.New(data["total"], txs);
 		});
 	}
 
