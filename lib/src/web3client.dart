@@ -15,13 +15,6 @@ import 'package:web3dart/src/proto/transaction.dart';
 /// to create transactions, you will instead have to obtain private keys of
 /// accounts yourself.
 
-enum TransactionType {
-  all, 
-  outlay, 
-  income, 
-  failed
-}
-
 class Web3Client {
 
 	final BlockNum defaultBlock = BlockNum.current();
