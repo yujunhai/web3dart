@@ -140,6 +140,22 @@ class Web3Client {
 		});
 	}
 
+	Future<TransactionResult> getTransactionsByBlockNumber(int blockNumber, int offset, int limit) {
+		return _makeRPCCall("eth_getTransactionsByBlockNumber", [numbers.toHex(blockNumber, include0x: true), offset, limit]).then((data) {
+			if (data == null) {
+				return null;
+			}
+
+			var txs = List<TransactionRows>();
+			for (var tx in data["datas"]) {
+				// print(reflect(tx).type.reflectedType.toString());
+				txs.add(new TransactionRows.fromJson(tx));
+			}
+
+			return TransactionResult.New(data["total"], txs);
+		});
+	}
+
 	Future<TransactionResult> getTransactions(EthereumAddress address, TransactionType type, int offset, int limit) {
 		int typeValue = 0xf;
 		if (type == TransactionType.outlay) {
@@ -150,7 +166,6 @@ class Web3Client {
 			typeValue = 0x8;
 		}
 		return _makeRPCCall("personal_getTransactionsByAccount", [address.hex, typeValue, offset, limit]).then((data) {
-			// return EtherAmount.fromUnitAndValue(EtherUnit.wei, numbers.hexToInt(data));
 			if (data == null) {
 				return null;
 			}
