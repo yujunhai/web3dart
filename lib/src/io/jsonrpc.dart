@@ -9,8 +9,13 @@ class JsonRPC {
 	Client client;
 
 	int _currentRequestId = 0;
+	Map<String, String> _headers = new Map<String, String>();
 
 	JsonRPC(this.url, this.client);
+
+	void AddHeader(Map<String, String> h) {
+		_headers.addAll(h);
+	}
 
 	/// Performs an RPC request, asking the server to execute the function with
 	/// the given name and the associated parameters, which need to be encodable
@@ -28,9 +33,13 @@ class JsonRPC {
 			"params": params,
 			"id": _currentRequestId,
 		};
+
+		if (!_headers.containsKey("Content-Type")) {
+			_headers.addAll({"Content-Type": "application/json"});
+		}
 		
 		var response = await client.post(url,
-				headers: {"Content-Type": "application/json"},
+				headers: _headers,
 				body: json.encode(requestPayload)
 		);
 

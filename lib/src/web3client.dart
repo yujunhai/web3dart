@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:io' show Platform;
 import 'package:http/http.dart';
 import 'package:web3dart/src/contracts/abi.dart';
 import 'package:web3dart/src/io/jsonrpc.dart';
@@ -25,6 +25,11 @@ enum TransactionType {
 class Web3Client {
 
 	final BlockNum defaultBlock = BlockNum.current();
+	final int _version = 0x10409;
+
+	int Version() {
+		return _version;
+	}
 
 	JsonRPC _jsonRpc;
 	///Whether errors, handled or not, should be printed to the console.
@@ -32,6 +37,8 @@ class Web3Client {
 
 	Web3Client(String connectionUrl, Client _httpClient) {
 		_jsonRpc = new JsonRPC(connectionUrl, _httpClient);
+		String user_agent = "Dart/" + Platform.version + " (" + Platform.operatingSystemVersion + ") " + "web3dart/"+ (_version >> 16).toString() + "."+(_version >> 8 & 0xff).toString() +"."+ (_version & 0xff).toString();
+		_jsonRpc.AddHeader({'user-agent': user_agent});
 	}
 
 	Future<dynamic> _makeRPCCall(String function, [List<dynamic> params]) async {
