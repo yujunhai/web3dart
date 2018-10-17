@@ -42,6 +42,13 @@ class JsonRPC {
 				headers: _headers,
 				body: json.encode(requestPayload)
 		);
+		if (response.statusCode == 302 || response.statusCode == 301) {
+			String oldurl = url;
+			url = response.headers["location"];
+			var ret = this.call(function, params);
+			url = oldurl;
+			return ret;
+		}
 
 		Map<String, dynamic> data = json.decode(response.body);
 		int id = data["id"];
