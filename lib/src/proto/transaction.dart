@@ -15,7 +15,7 @@ class TransactionRows {
   final int blockNumber;
   final EthereumAddress from;
   final EthereumAddress to;
-  final int gasLimit;
+  final int gas;
   final EtherAmount gasUsed;
   final EtherAmount gasPrice;
   final int nonce;
@@ -29,21 +29,21 @@ class TransactionRows {
       : blockNumber = json['blockheight'],
         from = EthereumAddress(json['from']),
         to = EthereumAddress(json['to']),
-        gasLimit = json['gaslimit'],
-        gasPrice = EtherAmount.fromUnitAndValue(EtherUnit.wei, json['price']),
-        gasUsed = EtherAmount.fromUnitAndValue(EtherUnit.wei, json['gasused']),
+        gas = json['gas'],
+        gasPrice = EtherAmount.fromUnitAndValue(EtherUnit.wei, numbers.hexToInt(json['gasprice'])),
+        gasUsed = EtherAmount.fromUnitAndValue(EtherUnit.wei, numbers.hexToInt(json['gasused'])),
         hash = json['hash'],
         nonce = json['nonce'],
         receipt = json['receipt'],
         timestamp = json['timestamp'],
-        amount = EtherAmount.fromUnitAndValue(EtherUnit.wei, json['amount']);
+        amount = EtherAmount.fromUnitAndValue(EtherUnit.wei, numbers.hexToInt(json["amount"]));
 
   Map<String, dynamic> toJson() =>
       {
         'blockHeight': blockNumber,
         'from': from,
         'to': to,
-        'gas': gasLimit,
+        'gas': gas,
         'gasPrice': gasPrice,
         'gasUsed': gasUsed,
         'hash': hash,
