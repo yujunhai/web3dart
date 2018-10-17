@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:mirrors';
 import 'dart:io' show Platform;
 import 'package:http/http.dart';
 import 'package:web3dart/src/contracts/abi.dart';
@@ -147,9 +148,10 @@ class Web3Client {
 			}
 
 			var txs = List<TransactionRows>();
-			for (var tx in data["datas"]) {
-				// print(reflect(tx).type.reflectedType.toString());
-				txs.add(new TransactionRows.fromJson(tx));
+			if (data["datas"] != null) {
+				for (var tx in data["datas"]) {
+					txs.add(new TransactionRows.fromJson(tx));
+				}
 			}
 
 			return TransactionResult.New(data["total"], txs);
