@@ -16,7 +16,7 @@ class TransactionRows {
   final EthereumAddress from;
   final EthereumAddress to;
   final int gas;
-  final EtherAmount gasUsed;
+  final int gasUsed;
   final EtherAmount gasPrice;
   final int nonce;
   final String hash;
@@ -31,7 +31,7 @@ class TransactionRows {
         to = EthereumAddress(json['to']),
         gas = json['gas'],
         gasPrice = EtherAmount.fromUnitAndValue(EtherUnit.wei, numbers.hexToInt(json['gasprice'])),
-        gasUsed = EtherAmount.fromUnitAndValue(EtherUnit.wei, numbers.hexToInt(json['gasused'])),
+        gasUsed = json['gasused'],
         hash = json['hash'],
         nonce = json['nonce'],
         receipt = json['receipt'],
