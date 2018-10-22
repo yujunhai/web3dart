@@ -154,6 +154,8 @@ class Web3Client {
 				}
 			}
 
+			txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
 			return TransactionResult.New(data["total"], txs);
 		});
 	}
@@ -177,6 +179,8 @@ class Web3Client {
 				// print(reflect(tx).type.reflectedType.toString());
 				txs.add(new TransactionRows.fromJson(tx));
 			}
+
+			txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
 			return TransactionResult.New(data["total"], txs);
 		});
