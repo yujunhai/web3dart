@@ -160,7 +160,7 @@ class Web3Client {
 		});
 	}
 
-	Future<TransactionResult> getTransactions(EthereumAddress address, TransactionType type, int offset, int limit) {
+	Future<TransactionResult> getTransactionsByAddr(EthereumAddress address, TransactionType type, int offset, int limit) {
 		int typeValue = 0xf;
 		if (type == TransactionType.outlay) {
 			typeValue = 0x1;
@@ -183,6 +183,17 @@ class Web3Client {
 			txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
 			return TransactionResult.New(data["total"], txs);
+		});
+	}
+
+	Future<TransactionRaw> getTransaction(String hash) {
+		return _makeRPCCall("eth_getTransactionByHash", [hash])
+				.then((s) {
+			if (s == null) {
+				return null;
+			}
+
+			return new TransactionRaw.fromJson(s);
 		});
 	}
 

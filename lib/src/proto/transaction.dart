@@ -54,3 +54,56 @@ class TransactionRows {
       };
 }
 
+
+class TransactionRaw {
+  final String blockHash;
+  final int blockNumber;
+  final EthereumAddress from;
+  final int gas;
+  final EtherAmount gasPrice;
+  final String hash;
+  final String input;
+  final int nonce;
+  final String r;
+  final String s;
+  final EthereumAddress to;
+  final int transactionIndex;
+  final String v;
+  final EtherAmount value;
+
+  TransactionRaw.fromJson(Map<String, dynamic> json)
+    : blockNumber = int.parse(json['blockNumber']),
+      from = EthereumAddress(json['from']),
+      to = EthereumAddress(json['to']),
+      gas = int.parse(json['gas']),
+      blockHash = json['blockHash'],
+      gasPrice = EtherAmount.fromUnitAndValue(EtherUnit.wei, numbers.hexToInt(json['gasPrice'])),
+      hash = json['hash'],
+      input = json['input'],
+      nonce = int.parse(json['nonce']),
+      r = json['r'],
+      s = json['s'],
+      v = json['v'],
+      transactionIndex = int.parse(json['transactionIndex']),
+      value = EtherAmount.fromUnitAndValue(EtherUnit.wei, numbers.hexToInt(json["value"]));
+
+  Map<String, dynamic> toJson() => 
+  {
+    'blockHash': blockHash,
+    'blockNumber': blockNumber,
+    'from': from,
+    'gas': gas,
+    'gasPrice': gasPrice,
+    'hash': hash,
+    'input': input,
+    'nonce': nonce,
+    'r': r,
+    's': s,
+    'to': to,
+    'transactionIndex': transactionIndex,
+    'v': v,
+    'value': value,
+  };
+}
+
+
