@@ -72,7 +72,7 @@ class TransactionRaw {
   final EtherAmount value;
 
   TransactionRaw.fromJson(Map<String, dynamic> json)
-    : blockNumber = int.parse(json['blockNumber']),
+    : blockNumber = int.parse(json['blockNumber'] ?? '-1'),
       from = EthereumAddress(json['from']),
       to = EthereumAddress(json['to']),
       gas = int.parse(json['gas']),
