@@ -13,3 +13,11 @@ export "package:web3dart/src/utils/amounts.dart";
 
 export "package:web3dart/src/wallet/credential.dart";
 export 'package:web3dart/src/wallet/wallet.dart';
+
+
+enum TransactionType {
+  all, 
+  outlay, 
+  income, 
+  failed
+}

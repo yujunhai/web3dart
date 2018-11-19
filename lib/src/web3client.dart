@@ -1,5 +1,6 @@
 import 'dart:async';
-
+// import 'dart:mirrors';
+import 'dart:io' show Platform;
 import 'package:http/http.dart';
 import 'package:web3dart/src/contracts/abi.dart';
 import 'package:web3dart/src/io/jsonrpc.dart';
@@ -8,14 +9,21 @@ import 'package:web3dart/src/utils/amounts.dart';
 import "package:web3dart/src/utils/numbers.dart" as numbers;
 import 'package:web3dart/web3dart.dart';
 import 'package:web3dart/src/proto/proto_transaction.dart';
+import 'package:web3dart/src/proto/transaction.dart';
 
 /// Class for sending requests over an HTTP JSON-RPC API endpoint to Ethereum
 /// clients. This library won't use the accounts feature of clients to use them
 /// to create transactions, you will instead have to obtain private keys of
 /// accounts yourself.
+
 class Web3Client {
 
 	final BlockNum defaultBlock = BlockNum.current();
+	final int _version = 0x10409;
+
+	int Version() {
+		return _version;
+	}
 
 	JsonRPC _jsonRpc;
 	///Whether errors, handled or not, should be printed to the console.
@@ -23,6 +31,8 @@ class Web3Client {
 
 	Web3Client(String connectionUrl, Client _httpClient) {
 		_jsonRpc = new JsonRPC(connectionUrl, _httpClient);
+		String user_agent = "Dart/" + Platform.version + " (" + Platform.operatingSystemVersion + ") " + "web3dart/"+ (_version >> 16).toString() + "."+(_version >> 8 & 0xff).toString() +"."+ (_version & 0xff).toString();
+		_jsonRpc.AddHeader({'user-agent': user_agent});
 	}
 
 	Future<dynamic> _makeRPCCall(String function, [List<dynamic> params]) async {
@@ -128,6 +138,62 @@ class Web3Client {
 
 		return _makeRPCCall("eth_getBalance", [address.hex, blockParam]).then((data) {
 			return EtherAmount.fromUnitAndValue(EtherUnit.wei, numbers.hexToInt(data));
+		});
+	}
+
+	Future<TransactionResult> getTransactionsByBlockNumber(int blockNumber, int offset, int limit) {
+		return _makeRPCCall("eth_getTransactionsByBlockNumber", [numbers.toHex(blockNumber, include0x: true), offset, limit]).then((data) {
+			if (data == null) {
+				return null;
+			}
+
+			var txs = List<TransactionRows>();
+			if (data["datas"] != null) {
+				for (var tx in data["datas"]) {
+					txs.add(new TransactionRows.fromJson(tx));
+				}
+			}
+
+			txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+			return TransactionResult.New(data["total"], txs);
+		});
+	}
+
+	Future<TransactionResult> getTransactionsByAddr(EthereumAddress address, TransactionType type, int offset, int limit) {
+		int typeValue = 0xf;
+		if (type == TransactionType.outlay) {
+			typeValue = 0x1;
+		} else if (type == TransactionType.income) {
+			typeValue = 0x2;
+		} else if (type == TransactionType.failed) {
+			typeValue = 0x8;
+		}
+		return _makeRPCCall("personal_getTransactionsByAccount", [address.hex, typeValue, offset, limit]).then((data) {
+			if (data == null) {
+				return null;
+			}
+
+			var txs = List<TransactionRows>();
+			for (var tx in data["datas"]) {
+				// print(reflect(tx).type.reflectedType.toString());
+				txs.add(new TransactionRows.fromJson(tx));
+			}
+
+			txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+			return TransactionResult.New(data["total"], txs);
+		});
+	}
+
+	Future<TransactionRaw> getTransaction(String hash) {
+		return _makeRPCCall("eth_getTransactionByHash", [hash])
+				.then((s) {
+			if (s == null) {
+				return null;
+			}
+
+			return new TransactionRaw.fromJson(s);
 		});
 	}
 
