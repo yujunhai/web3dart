@@ -10,6 +10,7 @@ import "package:web3dart/src/utils/numbers.dart" as numbers;
 import 'package:web3dart/web3dart.dart';
 import 'package:web3dart/src/proto/proto_transaction.dart';
 import 'package:web3dart/src/proto/transaction.dart';
+import 'package:web3dart/src/proto/txinfo.dart';
 
 /// Class for sending requests over an HTTP JSON-RPC API endpoint to Ethereum
 /// clients. This library won't use the accounts feature of clients to use them
@@ -196,6 +197,41 @@ class Web3Client {
 			return new TransactionRaw.fromJson(s);
 		});
 	}
+
+	///Fetch transaction info from web3 server
+	///We offer 3 value of param queryType
+	///QUERY_BY_ALL   1, this value means the method will query from transaction history
+	///QUERY_BY_BLOCK  2, this value means the method will query from transaction history of specific block
+	///QUERY_BY_USER	3, this value means the method will query from  transactions history of specific user
+	///Here, we'll just use QUERY_BY_USER, params' meaning defers when query is different
+	///
+	///When queryType is QUERY_BY_USER
+	///@indexKey holds user's address
+	///@lastTxHash holds last transaction's hash of current page if we are heading for next page
+	///or the first transaction's hash of current page if we are heading for previous page
+	///@timestamp holds last transaction's timestamp of current page if we are heading for next page
+	///or the first transaction's timestamp of current page if we are heading for previous page
+	/// @curPageIndex is the index of page that we're visiting
+	/// @pageCount acts as limit
+	/// @searchFlag is the direction we are turning, first,next and so on
+Future<TransactionInfoRes> getTransactionInfo(int queryType,String indexKey, String lastTxHash, int timestamp, int curPageIndex, int pageCount, int searchFlag) {
+		return _makeRPCCall("eth_getTransactionInfoList", [queryType, indexKey, lastTxHash, timestamp, curPageIndex, pageCount, searchFlag])
+				.then((s){
+				if (s == null) {
+					return null;
+				}
+
+				print(s);
+				var pageInfo = new PageInfo.fromJson(s['pInfo']);
+				if (s['transactions'] == null) {
+						return new TransactionInfoRes.New(pageInfo, List<TransactionInfo>());
+				} else {
+						var txInfo = (s['transactions'] as List).map((i) => TransactionInfo.fromJson(i)).toList();
+
+						return new TransactionInfoRes.New(pageInfo, txInfo);
+				}
+		});
+}
 
 	Future<int> getMaxNonce(EthereumAddress address) {
 		return _makeRPCCall("eth_getMaxNonce", [address.hex])
