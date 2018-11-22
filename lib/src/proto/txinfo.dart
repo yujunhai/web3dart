@@ -48,7 +48,7 @@ class TransactionInfo {
   final String contract;
   final String blockHeight;
   final String gasUsed;
-  final int timestamp;
+  final String timestamp;
   final int receipt;
   final String payload;
 
@@ -65,7 +65,7 @@ class TransactionInfo {
         contract = json['contract'],
         blockHeight = json.containsKey('blockheight')&&json['blockheight']!= null?json['blockheight']:null,
         gasUsed = json['gasUsed'],
-        timestamp = json['timestamp'],
+        timestamp = json['timestamp'].toString(),
         receipt = json['receipt'],
         payload = json['payload'];
 
