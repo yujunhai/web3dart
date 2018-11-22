@@ -11,6 +11,7 @@ import 'package:web3dart/web3dart.dart';
 import 'package:web3dart/src/proto/proto_transaction.dart';
 import 'package:web3dart/src/proto/transaction.dart';
 import 'package:web3dart/src/proto/txinfo.dart';
+import 'package:web3dart/src/proto/block.dart';
 
 /// Class for sending requests over an HTTP JSON-RPC API endpoint to Ethereum
 /// clients. This library won't use the accounts feature of clients to use them
@@ -87,6 +88,29 @@ class Web3Client {
 	/// Returns the version of the Ethereum-protocol the client is using.
 	Future<int> getEtherProtocolVersion() {
 		return _makeRPCCall("eth_protocolVersion");
+	}
+
+	Future<BlockRaw> getBlockByHash(String hash) {
+
+		return _makeRPCCall("eth_getBlockByHash", [hash, false])
+				.then((s) {
+			if (s == null) {
+				return null;
+			}
+
+			return new BlockRaw.fromJson(s);
+		});
+	}
+
+	Future<BlockRaw> getBlockByNumber(int blockNumber) {
+		return _makeRPCCall("eth_getBlockByNumber", [numbers.toHex(blockNumber, include0x: true), false])
+				.then((s) {
+			if (s == null) {
+				return null;
+			}
+
+			return new BlockRaw.fromJson(s);
+		});
 	}
 
 	/// Returns an object indicating whether the node is currently synchronising
