@@ -245,7 +245,7 @@ Future<TransactionInfoRes> getTransactionInfo(int queryType,String indexKey, Str
 					return null;
 				}
 
-				print(s);
+				//print(s);
 				var pageInfo = new PageInfo.fromJson(s['pInfo']);
 				if (s['transactions'] == null) {
 						return new TransactionInfoRes.New(pageInfo, List<TransactionInfo>());
