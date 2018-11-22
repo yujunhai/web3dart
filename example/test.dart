@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:http/http.dart';
 import 'package:web3dart/web3dart.dart';
 
-//const String _URL = "http://127.0.0.1:8545";
-const String _URL = "https://api.del.io:7101";
+const String _URL = "http://127.0.0.1:8545";
 
 Future<Null> main() async {
     var httpClient = new Client();
