@@ -21,12 +21,12 @@ Future<Null> main() async {
     }
     */
 
-    var txinfores = await client.getTransactionInfo(3,"0xd7b47ae464765fa5afd65cc0aa275caffdb72869","0x0000000000000000000000000000000000000000000000000000000000000000",0,1,10,1);
-
+    //var txinfores = await client.getTransactionInfo(3,"0xd7b47ae464765fa5afd65cc0aa275caffdb72869","0x0000000000000000000000000000000000000000000000000000000000000000",0,1,10,1);
+    var txinfores = await client.getUserTransactionInfo(2,"0x23fdb7cd972d4b61017f9d44e79f74cd295cb51d","0x0000000000000000000000000000000000000000000000000000000000000000",0,1,10,1);
     print("===============");
     print(txinfores.pageInfo.toJson());
     for(var tx in txinfores.txList) {
         print(tx.amount.getValueInUnit(EtherUnit.ether));
-        print(tx.price.getValueInUnit(EtherUnit.ether));
+        print(tx.price.getValueInUnit(EtherUnit.gwei));
     }
 }

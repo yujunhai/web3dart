@@ -238,6 +238,7 @@ class Web3Client {
 	/// @curPageIndex is the index of page that we're visiting
 	/// @pageCount acts as limit
 	/// @searchFlag is the direction we are turning, first,next and so on
+	/*
 Future<TransactionInfoRes> getTransactionInfo(int queryType,String indexKey, String lastTxHash, int timestamp, int curPageIndex, int pageCount, int searchFlag) {
 		return _makeRPCCall("eth_getTransactionInfoList", [queryType, indexKey, lastTxHash, timestamp, curPageIndex, pageCount, searchFlag])
 				.then((s){
@@ -252,6 +253,24 @@ Future<TransactionInfoRes> getTransactionInfo(int queryType,String indexKey, Str
 				} else {
 						var txInfo = (s['transactions'] as List).map((i) =>
 								TransactionInfo.fromJson(i)).toList();
+
+						return new TransactionInfoRes.New(pageInfo, txInfo);
+				}
+		});
+}*/
+
+	///TXTYPE 1 from
+	///TXTYPE 2 to
+	///TXTYPE 3 all
+Future<TransactionInfoRes> getUserTransactionInfo(int txType, String address, String lastTransHash, int timestamp, int curPageIndex, int pageCount, int searchFlag) {
+		return _makeRPCCall("eth_getUserTransactionInfoList", [address, lastTransHash, timestamp, txType, curPageIndex, pageCount, searchFlag])
+				.then((s){
+				var pageInfo = new PageInfo.fromJson(s['pInfo']);
+				if (s['transactions'] == null) {
+						return new TransactionInfoRes.New(pageInfo, List<TransactionInfo>());
+				} else {
+						var txInfo = (s['transactions'] as List).map((i) =>
+						TransactionInfo.fromJson(i)).toList();
 
 						return new TransactionInfoRes.New(pageInfo, txInfo);
 				}
