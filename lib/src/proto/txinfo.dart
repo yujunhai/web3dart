@@ -54,13 +54,13 @@ class TransactionInfo {
 
   TransactionInfo.fromJson(Map<String, dynamic> json)
       : hash = json['hash'],
-        price = EtherAmount.fromUnitAndValue(EtherUnit.wei, numbers.hexToInt(json['price'])),
+        price = EtherAmount.fromUnitAndValue(EtherUnit.wei, BigInt.parse(json['price'])),
         gasLimit = EtherAmount.fromUnitAndValue(EtherUnit.wei, json['gaslimit']),
         from = EthereumAddress(json['from']),
         to = EthereumAddress(json['to']),
-        amount = EtherAmount.fromUnitAndValue(EtherUnit.wei, numbers.hexToInt(json['amount'])),
-        type = json['type'],
-        nonce = json['nonce'],
+        amount = EtherAmount.fromUnitAndValue(EtherUnit.wei, BigInt.parse(json['amount'])),
+        type = json.containsKey('type')&&json['type']!= null?json['type']:0,
+        nonce = json.containsKey('nonce')&&json['nonce']!= null?json['nonce']:0,
         input = json['input'],
         contract = json['contract'],
         blockHeight = json.containsKey('blockheight')&&json['blockheight']!= null?json['blockheight']:null,

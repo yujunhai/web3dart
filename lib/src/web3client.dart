@@ -250,7 +250,8 @@ Future<TransactionInfoRes> getTransactionInfo(int queryType,String indexKey, Str
 				if (s['transactions'] == null) {
 						return new TransactionInfoRes.New(pageInfo, List<TransactionInfo>());
 				} else {
-						var txInfo = (s['transactions'] as List).map((i) => TransactionInfo.fromJson(i)).toList();
+						var txInfo = (s['transactions'] as List).map((i) =>
+								TransactionInfo.fromJson(i)).toList();
 
 						return new TransactionInfoRes.New(pageInfo, txInfo);
 				}

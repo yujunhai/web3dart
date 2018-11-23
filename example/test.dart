@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:http/http.dart';
 import 'package:web3dart/web3dart.dart';
 
-const String _URL = "http://127.0.0.1:8545";
+//const String _URL = "http://127.0.0.1:8545";
+const String _URL = "http://192.168.1.162:7001";
 
 Future<Null> main() async {
     var httpClient = new Client();
@@ -20,10 +21,12 @@ Future<Null> main() async {
     }
     */
 
-    var txinfores = await client.getTransactionInfo(3,"0x61b9cf73d2d5b932ebac67c3ed26db3bb2520c58","0x0000000000000000000000000000000000000000000000000000000000000000",0,1,70,1);
+    var txinfores = await client.getTransactionInfo(3,"0xd7b47ae464765fa5afd65cc0aa275caffdb72869","0x0000000000000000000000000000000000000000000000000000000000000000",0,1,10,1);
 
     print("===============");
-
-    txinfores = await client.getTransactionInfo(1,"","0x0000000000000000000000000000000000000000000000000000000000000000",0,1,70,1);
     print(txinfores.pageInfo.toJson());
+    for(var tx in txinfores.txList) {
+        print(tx.amount.getValueInUnit(EtherUnit.ether));
+        print(tx.price.getValueInUnit(EtherUnit.ether));
+    }
 }
