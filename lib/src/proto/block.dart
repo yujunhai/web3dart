@@ -18,7 +18,7 @@ class BlockRaw {
   final int size;
   final String stateRoot;
   final int timestamp;
-  final int totalDifficulty;
+  final BigInt totalDifficulty;
   final List<String> transactions;
   final String transactionsRoot;
   final List<String> uncles;
@@ -40,7 +40,7 @@ class BlockRaw {
       size = int.parse(json['size']),
       stateRoot = json['stateRoot'],
       timestamp = int.parse(json['timestamp']),
-      totalDifficulty = int.parse(json['totalDifficulty']),
+      totalDifficulty = numbers.hexToInt(json['totalDifficulty']),
       transactionsRoot = json['transactionsRoot'],
       transactions = json['transactions'].cast<String>(),
       uncles = json["uncles"].cast<String>();
